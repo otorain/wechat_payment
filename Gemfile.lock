@@ -11,6 +11,7 @@ PATH
   specs:
     wechat_payment (0.1.0)
       rails (~> 6.1.4)
+      wx_pay
 
 GEM
   remote: https://rubygems.org/

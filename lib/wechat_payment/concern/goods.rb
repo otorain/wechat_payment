@@ -7,7 +7,7 @@ module WechatPayment
 
       def self.included(base)
         base.class_eval do
-          cattr_accessor :user_model, :user_ref_field, :goods_ref_field, :user_goods_model
+          cattr_accessor :user_model, :user_ref_field, :goods_ref_field, :user_goods_model, :persist_goods_attrs
 
           self.user_model = "User"
           self.user_ref_field = "user"
@@ -26,11 +26,16 @@ module WechatPayment
       # @return [WechatPaymentOrder]
       def sell_to(user)
 
+        persist_goods_data = {}.tap do |h|
+          self.class.persist_goods_attrs.each do |attr|
+            h[attr] = send(attr)
+          end
+        end
+
         user_goods = self.class.user_goods_model.constantize.create(
           self.class.goods_ref_field => self,
-          name: name,
-          price: price,
-          self.class.user_ref_field => user
+          self.class.user_ref_field => user,
+          **persist_goods_data
         )
 
         user_goods.payment_orders.create(
