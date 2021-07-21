@@ -15,7 +15,7 @@ module WechatPayment
     def gen_out_refund_no
       loop do
         out_refund_no = "#{Time.current.to_i}#{SecureRandom.random_number(999_999_999)}"
-        record = WechatRefundOrder.find_by(out_refund_no: out_refund_no)
+        record = WechatPayment::RefundOrder.find_by(out_refund_no: out_refund_no)
 
         if record.blank?
           self.out_refund_no = out_refund_no
