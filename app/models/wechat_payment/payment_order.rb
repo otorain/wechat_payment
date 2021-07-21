@@ -68,7 +68,12 @@ module WechatPayment
     # }
     def pay
       order_result = WechatPayment::Service.new(self).order
-      WechatPayment::Client.gen_js_pay_payload(order_result.data).merge(orderId: id).with_indifferent_access
+      if order_result.success?
+        payload = WechatPayment::Client.gen_js_pay_payload(order_result.data).merge(orderId: id).with_indifferent_access
+        WechatPayment::ServiceResult.new(success: true, data: payload)
+      else
+        order_result
+      end
     end
 
     # 重新支付订单
