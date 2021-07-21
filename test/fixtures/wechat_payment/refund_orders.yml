@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  payment_order: one
+  refund_fee: 1
+  total_fee: 1
+  out_trade_no: MyString
+  out_refund_no: MyString
+  refund_id: 1
+  state: MyString
+  refunded_at: 2021-07-06 17:52:05
+
+two:
+  payment_order: two
+  refund_fee: 1
+  total_fee: 1
+  out_trade_no: MyString
+  out_refund_no: MyString
+  refund_id: 1
+  state: MyString
+  refunded_at: 2021-07-06 17:52:05
