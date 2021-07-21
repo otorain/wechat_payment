@@ -11,6 +11,7 @@ module WechatPayment
     WxPay.mch_id = mch_id
     WxPay.sub_appid = sub_appid
     WxPay.sub_mchid = sub_mch_id
+    WxPay.key = key
 
     if cert_path
       WxPay.set_apiclient_by_pkcs12(File.binread(cert_path), mch_id)
