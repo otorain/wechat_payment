@@ -5,7 +5,6 @@ module WechatPayment
     belongs_to :user, primary_key: :open_id, foreign_key: :open_id
 
     before_save :set_user_info
-    before_save :set_goods_info
     before_create :gen_out_trade_no
     belongs_to :goods, polymorphic: true
 
