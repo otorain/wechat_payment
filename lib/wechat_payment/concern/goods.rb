@@ -12,6 +12,7 @@ module WechatPayment
           self.user_model = "User"
           self.user_ref_field = "user"
           self.goods_ref_field = self.name.underscore
+          self.persist_goods_attrs = []
 
           # 商品和用户的中间表模型，假设商品模型是 Product，那么中间模型就是 UserProduct
           self.user_goods_model = "#{self.user_model}#{self.name}"
