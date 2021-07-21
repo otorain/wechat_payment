@@ -22,11 +22,6 @@ module WechatPayment
       self.spbill_create_ip = user.spbill_create_ip
     end
 
-    # 将商品信息保存至订单
-    def set_goods_info
-      self.body = goods.name
-    end
-
     # 生成交易编号
     def gen_out_trade_no
       loop do
