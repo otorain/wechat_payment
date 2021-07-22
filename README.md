@@ -10,6 +10,8 @@ product = Product.first
 # 微信要传一个用户调起支付的 ip: spbill_create_ip ，文档上写必传，但是传空、固定ip、不传都不会报错，
 # 但是还是给他加上了，保存到用户模型的 last_spbill_create_ip 属性上，实际使用中可以
 # 在控制器里边通过 request.remote_ip 获取请求的 ip
+# 
+# user.spbill_create_ip = request.remote_ip
 client_ip = "45.12.112.31"  
 user.spbill_create_ip = client_ip
 

@@ -41,6 +41,9 @@ module WechatPayment
         :error
       end
     end
-  end
 
+    def as_json(options = {})
+      data.as_json(options)
+    end
+  end
 end

@@ -1,7 +1,9 @@
 
 module WechatPayment
   class Client
-    def initialize # (merchant = WxPay)
+    GATEWAY_URL = 'https://api.mch.weixin.qq.com'.freeze
+
+    def initialize # (merchant = WechatPayment)
       # required_attrs = [:appid, :mch_id, :key, :app_secret, :cert_path]
       # missing_attrs = required_attrs.reject { |attr| merchant.respond_to?(attr) }
       # if missing_attrs.present?
@@ -11,11 +13,11 @@ module WechatPayment
       # @merchant = merchant
       # cert_path = Rails.root.join(merchant.cert_path)
       #
-      # WxPay.appid = merchant.appid
-      # WxPay.key = merchant.key
-      # WxPay.mch_id = merchant.mch_id
-      # WxPay.appsecret = merchant.app_secret
-      # WxPay.set_apiclient_by_pkcs12(File.binread(cert_path), merchant.mch_id)
+      # WechatPayment.appid = merchant.appid
+      # WechatPayment.key = merchant.key
+      # WechatPayment.mch_id = merchant.mch_id
+      # WechatPayment.appsecret = merchant.app_secret
+      # WechatPayment.set_apiclient_by_pkcs12(File.binread(cert_path), merchant.mch_id)
     end
 
     ORDER_REQUIRED_FIELD = [:out_trade_no, :spbill_create_ip, :body, :total_fee, :openid]
@@ -32,7 +34,7 @@ module WechatPayment
         order_params[:sub_openid] = order_params.delete(:openid)
       end
 
-      order_result = WxPay::Service.invoke_unifiedorder(order_params)
+      order_result = invoke_unifiedorder(order_params)
 
       if order_result.success?
 
@@ -57,7 +59,7 @@ module WechatPayment
 
       refund_params.merge!(**WechatPayment.as_payment_params, notify_url: refund_notify_url)
 
-      refund_result = WxPay::Service.invoke_refund(refund_params.to_options)
+      refund_result = invoke_refund(refund_params.to_options)
 
       if refund_result.success?
         refund_logger.info "{params: #{refund_params}, result: #{refund_result}"
@@ -75,12 +77,12 @@ module WechatPayment
 
     # 处理支付回调
     def self.handle_payment_notify(notify_data)
-      if !WxPay::Sign.verify?(notify_data)
+      if !WechatPayment::Sign.verify?(notify_data)
         payment_logger.error("{msg: 签名验证失败, errors: #{notify_data}}")
         WechatPayment::ServiceResult.new(errors: notify_data, message: "回调签名验证失败")
       end
 
-      result = WxPay::Result.new(notify_data)
+      result = WechatPayment::Result.new(notify_data)
 
       if result.success?
         payment_logger.info("{callback: #{notify_data}}")
@@ -95,7 +97,7 @@ module WechatPayment
     def self.handle_refund_notify(encrypted_notify_data)
       notify_data = decrypt_refund_notify(encrypted_notify_data)
 
-      result = WxPay::Result.new(notify_data)
+      result = WechatPayment::Result.new(notify_data)
       if result.success?
         refund_logger.info "{callback: #{notify_data}}"
         WechatPayment::ServiceResult.new(success: true, data: notify_data)
@@ -105,21 +107,133 @@ module WechatPayment
       end
     end
 
-    # 解密退款回调数据
-    def self.decrypt_refund_notify(decrypted_info)
-      WxPay::Service.decrypt_refund_notify(decrypted_info)
-    end
-
     # 生成下单成功后返回给前端拉起微信支付的数据结构
-    def self.gen_js_pay_payload(order_result)
+    def self.gen_js_pay_payload(order_result, options = {})
       payment_params = {
-        prepayid: order_result["prepay_id"],
-        noncestr: SecureRandom.hex(16)
+        appId: WechatPayment.sub_appid || WechatPayment.appid,
+        package: "prepay_id=#{order_result["prepay_id"]}",
+        key: options.delete(:key) || WechatPayment.key,
+        nonceStr: SecureRandom.hex(16),
+        timeStamp: Time.now.to_i.to_s,
+        signType: 'MD5'
       }
 
-      # 如果是服务商的传 sub_appid ，否则 appid
-      WxPay::Service.generate_js_pay_req(payment_params, { appid: WechatPayment.sub_appid || WechatPayment.appid })
+      payment_params[:paySign] = WechatPayment::Sign.generate(payment_params)
+
+      payment_params
     end
+
+    GENERATE_JS_PAY_REQ_REQUIRED_FIELDS = [:prepayid, :noncestr]
+    def self.generate_js_pay_req(params, options = {})
+      check_required_options(params, GENERATE_JS_PAY_REQ_REQUIRED_FIELDS)
+
+      params = {
+        appId: options.delete(:appid) || WechatPayment.appid,
+        package: "prepay_id=#{params.delete(:prepayid)}",
+        key: options.delete(:key) || WechatPayment.key,
+        nonceStr: params.delete(:noncestr),
+        timeStamp: Time.now.to_i.to_s,
+        signType: 'MD5'
+      }.merge(params)
+
+      params[:paySign] = WechatPayment::Sign.generate(params)
+      params
+    end
+
+
+    INVOKE_UNIFIEDORDER_REQUIRED_FIELDS = [:body, :out_trade_no, :total_fee, :spbill_create_ip, :notify_url, :trade_type]
+    def invoke_unifiedorder(params, options = {})
+      params = {
+        appid: options.delete(:appid) || WechatPayment.appid,
+        mch_id: options.delete(:mch_id) || WechatPayment.mch_id,
+        key: options.delete(:key) || WechatPayment.key,
+        nonce_str: SecureRandom.uuid.tr('-', '')
+      }.merge(params)
+
+      check_required_options(params, INVOKE_UNIFIEDORDER_REQUIRED_FIELDS)
+
+      result = WechatPayment::InvokeResult.new(
+        Hash.from_xml(
+          invoke_remote("/pay/unifiedorder", make_payload(params), options)
+        )
+      )
+
+      yield result if block_given?
+
+      result
+    end
+
+
+    INVOKE_REFUND_REQUIRED_FIELDS = [:out_refund_no, :total_fee, :refund_fee, :op_user_id]
+    # out_trade_no 和 transaction_id 是二选一(必填)
+    def invoke_refund(params, options = {})
+      params = {
+        appid: options.delete(:appid) || WechatPayment.appid,
+        mch_id: options.delete(:mch_id) || WechatPayment.mch_id,
+        key: options.delete(:key) || WechatPayment.key,
+        nonce_str: SecureRandom.uuid.tr('-', ''),
+      }.merge(params)
+
+      params[:op_user_id] ||= params[:mch_id]
+
+      check_required_options(params, INVOKE_REFUND_REQUIRED_FIELDS)
+      warn("WechatPayment Warn: missing required option: out_trade_no or transaction_id must have one") if ([:out_trade_no, :transaction_id] & params.keys) == []
+
+      options = {
+        ssl_client_cert: options.delete(:apiclient_cert) || WechatPayment.apiclient_cert,
+        ssl_client_key: options.delete(:apiclient_key) || WechatPayment.apiclient_key,
+        verify_ssl: OpenSSL::SSL::VERIFY_NONE
+      }.merge(options)
+
+      result = WechatPayment::InvokeResult.new(
+        Hash.from_xml(
+          invoke_remote("/secapi/pay/refund", make_payload(params), options)
+        )
+      )
+
+      yield result if block_given?
+
+      result
+    end
+
+    # 解密微信退款回调信息
+    #
+    # result = Hash.from_xml(request.body.read)["xml"]
+    #
+    # data = WechatPayment::Service.decrypt_refund_notify(result)
+    def self.decrypt_refund_notify(decrypted_data)
+      aes = OpenSSL::Cipher::AES.new('256-ECB')
+      aes.decrypt
+      aes.key = Digest::MD5.hexdigest(WechatPayment.key)
+      result = aes.update(Base64.decode64(decrypted_data)) + aes.final
+      Hash.from_xml(result)["root"]
+    end
+
+    def make_payload(params, sign_type = WechatPayment::Sign::SIGN_TYPE_MD5)
+      sign = WechatPayment::Sign.generate(params, sign_type)
+      "<xml>#{params.except(:key).sort.map { |k, v| "<#{k}>#{v}</#{k}>" }.join}<sign>#{sign}</sign></xml>"
+    end
+
+    def check_required_options(options, names)
+      names.each do |name|
+        warn("WechatPayment Warn: missing required option: #{name}") unless options.has_key?(name)
+      end
+    end
+
+    def invoke_remote(url, payload, options = {})
+      uri = URI("#{GATEWAY_URL}#{url}")
+
+      req = Net::HTTP::Post.new(uri)
+      req['Content-Type'] = 'application/xml'
+
+      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.use_ssl = true
+        http.request(req, payload)
+      end
+
+      res.body
+    end
+
 
     private
 
@@ -149,5 +263,6 @@ module WechatPayment
     def self.refund_logger
       @refund_logger ||= WechatPayment::RLogger.make("wx_refund")
     end
+
   end
 end

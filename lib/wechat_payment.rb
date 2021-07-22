@@ -2,20 +2,34 @@ require "wechat_payment/version"
 require "wechat_payment/engine"
 
 module WechatPayment
-  mattr_accessor :appid, :app_secret, :mch_id, :sub_appid, :sub_app_secret, :sub_mch_id, :key, :cert_path, :host
+
+  class << self
+    attr_reader :apiclient_cert, :apiclient_key
+    attr_accessor :appid, :app_secret, :mch_id, :sub_appid, :sub_app_secret, :sub_mch_id, :key, :cert_path, :host
+  end
 
   def self.setup
     yield self if block_given?
-    WxPay.appid = appid
-    WxPay.appsecret = app_secret
-    WxPay.mch_id = mch_id
-    WxPay.sub_appid = sub_appid
-    WxPay.sub_mchid = sub_mch_id
-    WxPay.key = key
 
     if cert_path
-      WxPay.set_apiclient_by_pkcs12(File.binread(cert_path), mch_id)
+      set_apiclient_by_pkcs12(File.binread(cert_path), mch_id)
     end
+  end
+
+  def self.set_apiclient_by_pkcs12(str, pass)
+    pkcs12 = OpenSSL::PKCS12.new(str, pass)
+    @apiclient_cert = pkcs12.certificate
+    @apiclient_key = pkcs12.key
+
+    pkcs12
+  end
+
+  def apiclient_cert=(cert)
+    @apiclient_cert = OpenSSL::X509::Certificate.new(cert)
+  end
+
+  def apiclient_key=(key)
+    @apiclient_key = OpenSSL::PKey::RSA.new(key)
   end
 
   def self.as_payment_params

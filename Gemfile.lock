@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/otorain/wx_pay
-  revision: c16648b45ddf73043eb4140e0b77878534592aed
-  specs:
-    wx_pay (0.21.0)
-      activesupport (>= 3.2)
-      rest-client (>= 2.0.0)
-
 PATH
   remote: .
   specs:
@@ -13,6 +5,13 @@ PATH
       rails (~> 6.1.4)
       rexml
       wx_pay
+
+PATH
+  remote: vendor/wx_pay
+  specs:
+    wx_pay (0.21.0)
+      activesupport (>= 3.2)
+      rest-client (>= 2.0.0)
 
 GEM
   remote: https://rubygems.org/
