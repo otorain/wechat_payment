@@ -40,7 +40,7 @@ result[:js_payload]
 
 2. 执行 `bundle install`
 
-3. 安装
+3. 初始化
    ```bash
    $ rails g wechat_payment:install
    $ rails db:migrate
