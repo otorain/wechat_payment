@@ -82,7 +82,7 @@ module WechatPayment
         WechatPayment::ServiceResult.new(errors: notify_data, message: "回调签名验证失败")
       end
 
-      result = WechatPayment::Result.new(notify_data)
+      result = WechatPayment::InvokeResult.new(notify_data)
 
       if result.success?
         payment_logger.info("{callback: #{notify_data}}")
