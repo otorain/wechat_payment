@@ -2,8 +2,8 @@ require "test_helper"
 require "generators/initializer/initializer_generator"
 
 module WechatPayment
-  class InitializerGeneratorTest < Rails::Generators::TestCase
-    tests InitializerGenerator
+  class WechatPayment::InitializerGeneratorTest < Rails::Generators::TestCase
+    tests WechatPayment::InitializerGenerator
     destination Rails.root.join('tmp/generators')
     setup :prepare_destination
 
