@@ -97,7 +97,7 @@ module WechatPayment
     def self.handle_refund_notify(encrypted_notify_data)
       notify_data = decrypt_refund_notify(encrypted_notify_data)
 
-      result = WechatPayment::Result.new(notify_data)
+      result = WechatPayment::InvokeResult.new(notify_data)
       if result.success?
         refund_logger.info "{callback: #{notify_data}}"
         WechatPayment::ServiceResult.new(success: true, data: notify_data)
@@ -180,9 +180,9 @@ module WechatPayment
       warn("WechatPayment Warn: missing required option: out_trade_no or transaction_id must have one") if ([:out_trade_no, :transaction_id] & params.keys) == []
 
       options = {
-        ssl_client_cert: options.delete(:apiclient_cert) || WechatPayment.apiclient_cert,
-        ssl_client_key: options.delete(:apiclient_key) || WechatPayment.apiclient_key,
-        verify_ssl: OpenSSL::SSL::VERIFY_NONE
+        cert: options.delete(:apiclient_cert) || WechatPayment.apiclient_cert,
+        key: options.delete(:apiclient_key) || WechatPayment.apiclient_key,
+        verify_mode: OpenSSL::SSL::VERIFY_NONE
       }.merge(options)
 
       result = WechatPayment::InvokeResult.new(
@@ -226,7 +226,11 @@ module WechatPayment
       req = Net::HTTP::Post.new(uri)
       req['Content-Type'] = 'application/xml'
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      options = {
+        use_ssl: true
+      }.merge(options)
+
+      res = Net::HTTP.start(uri.hostname, uri.port, **options) do |http|
         http.use_ssl = true
         http.request(req, payload)
       end
