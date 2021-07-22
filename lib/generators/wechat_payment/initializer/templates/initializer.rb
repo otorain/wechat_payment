@@ -9,8 +9,9 @@ WechatPayment.setup do |config|
   config.mch_id = "112241802"
   config.key = "123456723erivPO09irNNbh78u8udwFer"
 
-  # 证书可以在微信支付后台获取到，路径是相对于项目根路径
-  config.cert_path = "config/apiclient_cert.p12"
+  # 证书可以在微信支付后台获取到，路径是相对于项目根路径，如果需要退款的话，则必须要证书
+  # config.cert_path = "config/apiclient_cert.p12"
+  config.cert_path = nil
 
   config.sub_appid = "wxf89f9547123456789"
   config.sub_mch_id = "1234918291"
