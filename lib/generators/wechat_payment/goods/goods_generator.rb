@@ -39,23 +39,23 @@ include WechatPayment::Concern::UserGoods
   private
 
   def goods_model_file
-    "app/models/#{name.underscore}.rb"
+    "app/models/#{name.to_s.underscore}.rb"
   end
 
   def user_model_file
-    "app/models/#{options[:user].underscore}"
+    "app/models/#{options[:user].to_s.underscore}"
   end
 
   def user_goods_model_file
-    "app/models/#{options[:user].underscore}_#{name.underscore}"
+    "app/models/#{options[:user].to_s.underscore}_#{name.to_s.underscore}"
   end
 
   def goods_model_name
-    name.camelize
+    name.to_s.camelize
   end
 
   def user_model_name
-    options[:user].camelize
+    options[:user].to_s.camelize
   end
 
   def user_goods_model_name
