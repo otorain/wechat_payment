@@ -13,6 +13,10 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
     route %Q(mount WechatPayment::Engine => "/wechat_payment")
   end
 
+  # 安装迁移文件
+  def copy_migration
+    Rake::Task["wechat_payment:install:migrations"].invoke
+  end
 
   def add_concern_to_goods
     goods_model_head_one = "class #{goods_model_name} < ApplicationRecord"
