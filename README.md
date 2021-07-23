@@ -1,7 +1,37 @@
 # WechatPayment
 微信支付的 engine
 
-## 使用
+
+## Convention
+如无特殊说明
+- 在使用该 Engine 之前，需要先建立`用户模型`，`商品模型`，`用户商品关联模型`
+- `用户模型`需要自己创建，用户表需要有 open_id 字段
+- `商品模型`和`用户商品关联模型`自行创建, 商品表需要有 price 和 name 字段。 假设`商品模型`为`Product`，则用户和商品之间的关联模型为`UserProduct`，关联模型属于`user`和`product`。
+
+## Getting Started
+
+1. 在`Gemfile`中添加
+   ```ruby
+   gem 'wechat_payment'
+   ```
+
+2. 执行 `bundle install`
+
+3. 初始化
+   ```bash
+   # rails g wechat_payment:install [GoodsModel] [UserModel]
+   $ rails g wechat_payment:install Product User
+   $ rails db:migrate
+   ```
+   
+## 配置
+打开 `config/initializers/wechat_payment.rb`，將里边的配置改成你自己的小程序配置
+
+## 支付
+用户模型具有`buy`方法，而商品模型有`sell`方法，用户购买商品或商品售出都会产生一张订单，
+调用订单的`pay`方法则会向微信发起下单请求，并将处理后的结果返回，此时返回的是一个`ServiceResult`对象，
+执行该对象的`as_json`方法，得到的就是小程序需要拉起支付的参数
+
 ```ruby
 user = User.first
 
@@ -20,37 +50,26 @@ order = user.buy(product)
 result = order.pay 
 
 # 返回给前端调起支付的数据
-result[:js_payload]
+result.as_json
+
 ```
 
-## 约定
-如无特殊说明
+## 退款
+调用订单的`refund`，参数是退款金额，默认全额退款，执行成功后会创建一张退款订单，此时退款订单状态为 pending，
+并返回退款下单的结果(`SerivceResult`对象)，如果成功，触发用户商品关联模型的`refund_apply_success`，
+失败则触发`refund_apply_failure`
 
-- 用户模型为`User`。
-- 商品模型和用户商品关联模型自行创建, 商品表需要有 price 和 name 字段。
-- 假设商品模型为`Product`，则用户和商品之间的关联模型为`UserProduct`，中间表属于`user`和`product`。
+```ruby
+payment_order = User.first.payment_orders.last
+result = payment_order.refund
 
-## 安装
+if result.success?
+   # do something on success
+else
+   # do something on failure
+end
+```
 
-1. 在`Gemfile`中添加
-
-   ```ruby
-   gem 'wechat_payment'
-   ```
-
-2. 执行 `bundle install`
-
-3. 初始化
-   ```bash
-   # rails g wechat_payment:install [GoodsModel] [UserModel]
-   $ rails g wechat_payment:install 
-   $ rails db:migrate
-   ```
-   
-4. 往用户表中添加`open_id`，string 类型，如果已有字段则不需要，open_id 需自行维护
-   
-## 配置
-打开 `config/initializers/wechat_payment.rb`，將里边的配置改成你自己的小程序配置
 
 
 ## 事件
@@ -68,7 +87,7 @@ result[:js_payload]
 | 退款成功(回调)      | refund_exec_success |
 | 退款失败(回调)      | refund_exec_failure |
 
-一个简单的例子
+一个简单的事件处理的例子
 ```ruby
 # app/model/user_product.rb
 class UserProduct
@@ -207,6 +226,10 @@ TODO 待补充
 
 ### refund_exec_failure:
 TODO 待补充
+
+
+
+
 
 ## Contributing
 Contribution directions go here.

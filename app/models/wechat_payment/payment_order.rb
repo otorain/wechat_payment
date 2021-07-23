@@ -87,7 +87,7 @@ module WechatPayment
 
     # 发起退款
     # @param [Integer] refund_fee 需要退款的金额，单位：分
-    def refund(refund_fee)
+    def refund(refund_fee = total_fee)
       WechatPayment::Service.new(self).refund(refund_fee)
     end
 
