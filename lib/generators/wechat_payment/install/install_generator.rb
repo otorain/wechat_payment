@@ -1,4 +1,4 @@
-class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
+class WechatPayment::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   argument :goods, type: :string
@@ -7,7 +7,6 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
 
   # 生成 initializer 文件
   def gen_initializer_file
-    binding.pry
     copy_file "initializer.rb", "config/initializers/wechat_payment.rb"
   end
 
