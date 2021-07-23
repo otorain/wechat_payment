@@ -28,7 +28,7 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
     user_model_head_one = "class #{user_model_name} < ApplicationRecord"
     inject_into_file user_model_file, after: user_model_head_one do <<-'USERS_CONCERN'
 
-  include WechatPayment::Concern::Users
+  include WechatPayment::Concern::User
     USERS_CONCERN
     end
   end
