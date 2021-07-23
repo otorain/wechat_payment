@@ -2,6 +2,8 @@ class CreateWechatPaymentRefundOrders < ActiveRecord::Migration[6.1]
   def change
     create_table :wechat_payment_refund_orders do |t|
       t.integer :payment_order_id
+      t.references :goods, polymorphic: true, null: false
+      t.references :customer, polymorphic: true, null: false
       t.integer :refund_fee
       t.integer :total_fee
       t.string :out_trade_no

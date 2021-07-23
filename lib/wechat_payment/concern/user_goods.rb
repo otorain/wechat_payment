@@ -5,8 +5,8 @@ module WechatPayment
       def self.included(base)
         base.class_eval do
 
-          has_many :payment_orders, class_name: "WechatPayment::PaymentOrder", as: :goods
-          has_many :refund_orders, through: :payment_orders
+          has_many :payment_orders, as: :goods, class_name: "WechatPayment::PaymentOrder"
+          has_many :refund_orders, as: :goods, class_name: "WechatPayment::PaymentOrder"
         end
       end
     end

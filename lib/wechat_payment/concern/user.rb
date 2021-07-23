@@ -7,7 +7,8 @@ module WechatPayment
         base.class_eval do
           attr_accessor :spbill_create_ip
 
-          has_many :payment_orders, as: :customer, class: "WechatPayment::PaymentOrder"
+          has_many :payment_orders, as: :customer, class_name: "WechatPayment::PaymentOrder"
+          has_many :refund_orders, as: :customer, class_name: "WechatPayment::RefundOrder"
 
           alias me itself
         end
