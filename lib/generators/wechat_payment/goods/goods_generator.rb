@@ -5,6 +5,7 @@ class WechatPayment::GoodsGenerator < Rails::Generators::NamedBase
 
   def add_concern_to_goods
     Rails.logger.info goods_model_file
+    puts goods_model_file
     goods_model_head_one = "class #{goods_model_name} < ApplicationRecord"
     inject_into_file goods_model_file, after: goods_model_head_one do
       <<~GOODS_CONCERN
@@ -15,6 +16,7 @@ include WechatPayment::Concern::Goods
 
   def add_concern_to_users
     Rails.logger.info user_model_file
+    puts user_model_file
     user_model_head_one = "class #{user_model_name} < ApplicationRecord"
     inject_into_file user_model_file, after: user_model_head_one do
       <<~USERS_CONCERN
@@ -25,6 +27,7 @@ include WechatPayment::Concern::Users
 
   def add_concern_to_user_goods
     Rails.logger.info user_goods_model_file
+    puts user_goods_model_file
     user_goods_model_head_one = "class #{user_goods_model_name} < ApplicationRecord"
     inject_into_file user_goods_model_file, after: user_goods_model_head_one do
       <<~USER_GOOD_CONCERN
