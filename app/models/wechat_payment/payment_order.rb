@@ -38,7 +38,9 @@ module WechatPayment
       refund_orders.create(
         out_trade_no: out_trade_no,
         refund_fee: refund_fee,
-        total_fee: total_fee
+        total_fee: total_fee,
+        goods: goods,
+        customer: customer
       )
     end
 
