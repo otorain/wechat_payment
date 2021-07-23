@@ -9,6 +9,7 @@ class WechatPayment::GoodsGenerator < Rails::Generators::NamedBase
       <<-GOODS_CONCERN
 
 include WechatPayment::Concern::Goods
+
       GOODS_CONCERN
     end
   end
@@ -19,6 +20,7 @@ include WechatPayment::Concern::Goods
       <<-USERS_CONCERN
 
 include WechatPayment::Concern::Users
+
       USERS_CONCERN
     end
   end
@@ -29,6 +31,7 @@ include WechatPayment::Concern::Users
       <<-USER_GOOD_CONCERN
 
 include WechatPayment::Concern::UserGoods
+
       USER_GOOD_CONCERN
     end
   end
