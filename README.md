@@ -3,16 +3,14 @@
 
 
 ## Convention
-如无特殊说明
-- 在使用该 Engine 之前，需要先建立`用户模型`，`商品模型`，`用户商品关联模型`
-- `用户模型`需要自己创建，用户表需要有 open_id 字段
-- `商品模型`和`用户商品关联模型`自行创建, 商品表需要有 price 和 name 字段。 假设`商品模型`为`Product`，则用户和商品之间的关联模型为`UserProduct`，关联模型属于`user`和`product`。
+在使用该 Engine 之前，需要先建立`用户模型`，`商品模型`，`用户商品关联模型`，用户表需要有 open_id 字段,
+商品表需要有 price 和 name 字段。假设`商品模型`为`Product`，则用户和商品之间的关联模型为`UserProduct`，
+关联模型属于`user`和`product`。
 
 ## Getting Started
-
 1. 在`Gemfile`中添加
    ```ruby
-   gem 'wechat_payment'
+     gem 'wechat_payment'
    ```
 
 2. 执行 `bundle install`
@@ -23,7 +21,7 @@
    $ rails g wechat_payment:install Product User
    $ rails db:migrate
    ```
-   
+
 ## 配置
 打开 `config/initializers/wechat_payment.rb`，將里边的配置改成你自己的小程序配置
 
@@ -51,7 +49,6 @@ result = order.pay
 
 # 返回给前端调起支付的数据
 result.as_json
-
 ```
 
 ## 退款
@@ -69,8 +66,6 @@ else
    # do something on failure
 end
 ```
-
-
 
 ## 事件
 当支付进行时，会产生一些相应的事件，事件会触发相应的钩子，如果有事先定义的话。钩子方法需定义在用户商品关联(如`UserProduct`)模型中，
@@ -120,43 +115,43 @@ end
 ###  payment_apply_failure:
 ```ruby
 {
- "return_code"=>"SUCCESS",
- "return_msg"=>"OK",
- "result_code"=>"FAIL",
- "err_code_des"=>"该订单已支付",
- "err_code"=>"ORDERPAID",
- "mch_id"=>"1363241802",
- "appid"=>"wxc5f26065c6471bcf",
- "sub_mch_id"=>"1525918291",
- "sub_appid"=>"wxf89f9547da823dcd",
- "nonce_str"=>"1jWLkg2YZjwnOozl",
- "sign"=>"3C80A1C9BD6CFDB7C37CCFCEAAF9E274"
+   "return_code"=>"SUCCESS",
+   "return_msg"=>"OK",
+   "result_code"=>"FAIL",
+   "err_code_des"=>"该订单已支付",
+   "err_code"=>"ORDERPAID",
+   "mch_id"=>"1363241802",
+   "appid"=>"wxc5f26065c6471bcf",
+   "sub_mch_id"=>"1525918291",
+   "sub_appid"=>"wxf89f9547da823dcd",
+   "nonce_str"=>"1jWLkg2YZjwnOozl",
+   "sign"=>"3C80A1C9BD6CFDB7C37CCFCEAAF9E274"
 } 
 ```
+
 ### payment_exec_success:
 ```ruby
-
 {
-  "appid" => "wxc5f26065c6471bcf",
-  "bank_type" => "CMB_CREDIT",
-  "cash_fee" => "1",
-  "fee_type" => "CNY",
-  "is_subscribe" => "N",
-  "mch_id" => "1363241802",
-  "nonce_str" => "e4ad44489a1f4e6f8a09d1299cfa59f6",
-  "openid" => "omf2nv3OgYXBYrNqdx9eUucKy7NQ",
-  "out_trade_no" => "1626765407380174189",
-  "result_code" => "SUCCESS",
-  "return_code" => "SUCCESS",
-  "sign" => "608972A8540240303D0560B1E79511B4",
-  "sub_appid" => "wxf89f9547da823dcd",
-  "sub_is_subscribe" => "N",
-  "sub_mch_id" => "1525918291",
-  "sub_openid" => "ogT7J5YddGnll-ippRvJq62Nv8W0",
-  "time_end" => "20210720151728",
-  "total_fee" => "1",
-  "trade_type" => "JSAPI",
-  "transaction_id" => "4200001148202107205270712453"
+   "appid" => "wxc5f26065c6471bcf",
+   "bank_type" => "CMB_CREDIT",
+   "cash_fee" => "1",
+   "fee_type" => "CNY",
+   "is_subscribe" => "N",
+   "mch_id" => "1363241802",
+   "nonce_str" => "e4ad44489a1f4e6f8a09d1299cfa59f6",
+   "openid" => "omf2nv3OgYXBYrNqdx9eUucKy7NQ",
+   "out_trade_no" => "1626765407380174189",
+   "result_code" => "SUCCESS",
+   "return_code" => "SUCCESS",
+   "sign" => "608972A8540240303D0560B1E79511B4",
+   "sub_appid" => "wxf89f9547da823dcd",
+   "sub_is_subscribe" => "N",
+   "sub_mch_id" => "1525918291",
+   "sub_openid" => "ogT7J5YddGnll-ippRvJq62Nv8W0",
+   "time_end" => "20210720151728",
+   "total_fee" => "1",
+   "trade_type" => "JSAPI",
+   "transaction_id" => "4200001148202107205270712453"
 }
 ```
 
@@ -166,41 +161,41 @@ TODO 待补充
 ### refund_apply_success:
 ```ruby
 {
-  "return_code"=>"SUCCESS",
-  "return_msg"=>"OK",
-  "appid"=>"wxc5f2606121234cf",
-  "mch_id"=>"1363241234",
-  "sub_mch_id"=>"1525912341",
-  "nonce_str"=>"RsXVcs0GMg2p5NRD",
-  "sign"=>"F10AB3929B900DE4E189CA93B73D9D7A",
-  "result_code"=>"SUCCESS",
-  "transaction_id"=>"4200001199202106280049902399",
-  "out_trade_no"=>"1624867410475591608",
-  "out_refund_no"=>"1624867450917685776",
-  "refund_id"=>"50301108952021062810183695009",
-  "refund_channel"=>"",
-  "refund_fee"=>"1",
-  "coupon_refund_fee"=>"0",
-  "total_fee"=>"1",
-  "cash_fee"=>"1",
-  "coupon_refund_count"=>"0",
-  "cash_refund_fee"=>"1"
+   "return_code"=>"SUCCESS",
+   "return_msg"=>"OK",
+   "appid"=>"wxc5f2606121234cf",
+   "mch_id"=>"1363241234",
+   "sub_mch_id"=>"1525912341",
+   "nonce_str"=>"RsXVcs0GMg2p5NRD",
+   "sign"=>"F10AB3929B900DE4E189CA93B73D9D7A",
+   "result_code"=>"SUCCESS",
+   "transaction_id"=>"4200001199202106280049902399",
+   "out_trade_no"=>"1624867410475591608",
+   "out_refund_no"=>"1624867450917685776",
+   "refund_id"=>"50301108952021062810183695009",
+   "refund_channel"=>"",
+   "refund_fee"=>"1",
+   "coupon_refund_fee"=>"0",
+   "total_fee"=>"1",
+   "cash_fee"=>"1",
+   "coupon_refund_count"=>"0",
+   "cash_refund_fee"=>"1"
 }
 ```
 
 ### refund_apply_failure:
 ```ruby
 {
-  "return_code"=>"SUCCESS",
-  "return_msg"=>"OK",
-  "appid"=>"wxc5f26065c6471bcf",
-  "mch_id"=>"1363241802",
-  "sub_mch_id"=>"1525918291",
-  "nonce_str"=>"gMDFilvaKanXW80W",
-  "sign"=>"BA24E81B18B63ACAF112DF9F84CA5E21",
-  "result_code"=>"FAIL",
-  "err_code"=>"INVALID_REQUEST",
-  "err_code_des"=>"订单已全额退款"
+   "return_code"=>"SUCCESS",
+   "return_msg"=>"OK",
+   "appid"=>"wxc5f26065c6471bcf",
+   "mch_id"=>"1363241802",
+   "sub_mch_id"=>"1525918291",
+   "nonce_str"=>"gMDFilvaKanXW80W",
+   "sign"=>"BA24E81B18B63ACAF112DF9F84CA5E21",
+   "result_code"=>"FAIL",
+   "err_code"=>"INVALID_REQUEST",
+   "err_code_des"=>"订单已全额退款"
 }
 
 ```
@@ -208,27 +203,24 @@ TODO 待补充
 ### refund_exec_success:
 ```ruby
 {
-  "out_refund_no"=>"1626765103919350974",
-  "out_trade_no"=>"1626765007719492162",
-  "refund_account"=>"REFUND_SOURCE_RECHARGE_FUNDS",
-  "refund_fee"=>"1",
-  "refund_id"=>"50301408672021072010826014924",
-  "refund_recv_accout"=>"招商银行信用卡4003",
-  "refund_request_source"=>"API",
-  "refund_status"=>"SUCCESS",
-  "settlement_refund_fee"=>"1",
-  "settlement_total_fee"=>"1",
-  "success_time"=>"2021-07-20 15:11:52",
-  "total_fee"=>"1",
-  "transaction_id"=>"4200001187202107202028998431"
+   "out_refund_no"=>"1626765103919350974",
+   "out_trade_no"=>"1626765007719492162",
+   "refund_account"=>"REFUND_SOURCE_RECHARGE_FUNDS",
+   "refund_fee"=>"1",
+   "refund_id"=>"50301408672021072010826014924",
+   "refund_recv_accout"=>"招商银行信用卡4003",
+   "refund_request_source"=>"API",
+   "refund_status"=>"SUCCESS",
+   "settlement_refund_fee"=>"1",
+   "settlement_total_fee"=>"1",
+   "success_time"=>"2021-07-20 15:11:52",
+   "total_fee"=>"1",
+   "transaction_id"=>"4200001187202107202028998431"
 }
 ```
 
 ### refund_exec_failure:
 TODO 待补充
-
-
-
 
 
 ## Contributing
