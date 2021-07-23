@@ -1,7 +1,9 @@
 class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
-  class_option :user, type: :string, default: :user
+  argument :goods_name, type: :string
+  argument :user_name, type: :string, default: :User
+
 
   # 生成 initializer 文件
   def gen_initializer_file
@@ -49,7 +51,7 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
   private
 
   def goods_model_file
-    "app/models/#{name.to_s.underscore}.rb"
+    "app/models/#{goods_name.to_s.underscore}.rb"
   end
 
   def user_model_file
@@ -57,11 +59,11 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
   end
 
   def user_goods_model_file
-    "app/models/#{options[:user].to_s.underscore}_#{name.to_s.underscore}.rb"
+    "app/models/#{options[:user].to_s.underscore}_#{goods_name.to_s.underscore}.rb"
   end
 
   def goods_model_name
-    name.to_s.camelize
+    goods_name.to_s.camelize
   end
 
   def user_model_name

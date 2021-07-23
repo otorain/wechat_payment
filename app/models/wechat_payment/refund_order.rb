@@ -4,7 +4,6 @@ module WechatPayment
 
     before_create :gen_out_refund_no
 
-    # has_one :goods, through: :payment_order, source_type: "Goods"
     belongs_to :goods, polymorphic: true
     belongs_to :customer, polymorphic: true
 

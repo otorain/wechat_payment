@@ -42,32 +42,13 @@ result[:js_payload]
 
 3. 初始化
    ```bash
-   $ rails g wechat_payment:install
+   # rails g wechat_payment:install [GoodsModel] [UserModel]
+   $ rails g wechat_payment:install 
    $ rails db:migrate
    ```
    
 4. 往用户表中添加`open_id`，string 类型，如果已有字段则不需要，open_id 需自行维护
    
-5. 在用户表中引入 `WechatPayment::Concern::User`
-    ```ruby
-    # app/model/user.rb
-    class User
-      include WechatPayment::Concern::User
-    end
-   ```
-6. 在商品模型中引入`WechatPayment::Concern::Goods`，并在用户商品关联模型中引入`WechatPayment::Concern::UserGoods`，这里假设商品模型是`Product`:
-   ```ruby
-   # app/model/product.rb
-   class Product
-     include WechatPayment::Concern::Goods
-   end
-   
-   # app/model/user_product.rb
-   class UserProduct
-     include WechatPayment::Concern::UserGoods
-   end
-   ```
-
 ## 配置
 打开 `config/initializers/wechat_payment.rb`，將里边的配置改成你自己的小程序配置
 
