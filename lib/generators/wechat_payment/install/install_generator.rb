@@ -71,8 +71,9 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
   def def_custom_user_model
     if user_model_name != 'User'
       <<-DEF
-  self.user_model = #{user_model_name}
-  self.user_ref_field = #{user_model_name.underscore}
+  self.user_model = "#{user_model_name}"
+  self.user_ref_field = "#{user_model_name.underscore}"
+  self.user_goods_model = "#{user_model_name}#{goods_model_name}"
       DEF
     end
   end

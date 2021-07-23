@@ -1,7 +1,7 @@
 
 module WechatPayment
   module Concern
-    module OwnedGoods
+    module UserGoods
       def self.included(base)
         base.class_eval do
 
