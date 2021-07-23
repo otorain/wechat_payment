@@ -15,7 +15,7 @@ class WechatPayment::InstallGenerator < Rails::Generators::NamedBase
 
   # 安装迁移文件
   def copy_migration
-    Rake::Task["wechat_payment:install:migrations"].invoke
+    rake "wechat_payment:install:migrations"
   end
 
   def add_concern_to_goods
