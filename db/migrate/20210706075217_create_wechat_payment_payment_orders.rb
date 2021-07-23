@@ -4,6 +4,7 @@ class CreateWechatPaymentPaymentOrders < ActiveRecord::Migration[6.1]
       t.string :open_id
       t.string :out_trade_no
       t.references :goods, polymorphic: true, null: false
+      t.references :customer, polymorphic: true, null: false
       t.string :transaction_id
       t.string :body
       t.integer :total_fee

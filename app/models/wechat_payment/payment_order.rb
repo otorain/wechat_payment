@@ -2,9 +2,9 @@ module WechatPayment
   class PaymentOrder < ApplicationRecord
 
     has_many :refund_orders
-    belongs_to :user, primary_key: :open_id, foreign_key: :open_id
+    belongs_to :customer, polymorphic: true
 
-    before_save :set_user_info
+    before_save :set_customer_info
     before_create :gen_out_trade_no
     belongs_to :goods, polymorphic: true
 
@@ -16,9 +16,9 @@ module WechatPayment
     }, _default: "pending"
 
     # 将部分用户信息保存至订单
-    def set_user_info
-      self.open_id = user.open_id if open_id.blank?
-      self.spbill_create_ip = user.spbill_create_ip
+    def set_customer_info
+      self.open_id = customer.open_id if open_id.blank?
+      self.spbill_create_ip = customer.spbill_create_ip
     end
 
     # 生成交易编号

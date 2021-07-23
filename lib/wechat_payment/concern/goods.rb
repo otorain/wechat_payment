@@ -43,7 +43,7 @@ module WechatPayment
           body: name,
           total_fee: price,
           trade_type: :JSAPI,
-          user: user
+          customer: user
         )
       end
 
