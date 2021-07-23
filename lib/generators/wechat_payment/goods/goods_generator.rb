@@ -8,8 +8,7 @@ class WechatPayment::GoodsGenerator < Rails::Generators::NamedBase
     inject_into_file goods_model_file, after: goods_model_head_one do
       <<-GOODS_CONCERN
 
-include WechatPayment::Concern::Goods
-
+  include WechatPayment::Concern::Goods
       GOODS_CONCERN
     end
   end
@@ -17,10 +16,9 @@ include WechatPayment::Concern::Goods
   def add_concern_to_users
     user_model_head_one = "class #{user_model_name} < ApplicationRecord"
     inject_into_file user_model_file, after: user_model_head_one do
-      <<-USERS_CONCERN
+      <<~USERS_CONCERN
 
-include WechatPayment::Concern::Users
-
+  include WechatPayment::Concern::Users
       USERS_CONCERN
     end
   end
@@ -28,10 +26,9 @@ include WechatPayment::Concern::Users
   def add_concern_to_user_goods
     user_goods_model_head_one = "class #{user_goods_model_name} < ApplicationRecord"
     inject_into_file user_goods_model_file, after: user_goods_model_head_one do
-      <<-USER_GOOD_CONCERN
+      <<~USER_GOOD_CONCERN
 
-include WechatPayment::Concern::UserGoods
-
+  include WechatPayment::Concern::UserGoods
       USER_GOOD_CONCERN
     end
   end
