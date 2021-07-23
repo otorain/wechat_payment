@@ -5,7 +5,7 @@
 
 desc "Install Wechat Payment Engine"
 namespace :wechat_payment do
-  task :install, [:goods, :user], needs: :environment do
+  task :install, :goods, :user do
     Rake::Task["wechat_payment:install:migrations"].invoke
     sh "rails g wechat_payment:initializer wechat_payment"
     sh "rails g wechat_payment:routes wechat_payment"
