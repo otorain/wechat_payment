@@ -13,7 +13,7 @@ WechatPayment.setup do |config|
   # config.cert_path = "config/apiclient_cert.p12"
   config.cert_path = nil
 
-  config.sub_appid = "wxf89f9547123456789"
-  config.sub_mch_id = "1234918291"
-  config.sub_app_secret = "88888231e2f3a9f152d163f61b99999"
+  config.sub_appid = "wx8f9f912623456789"
+  config.sub_mch_id = "1234911291"
+  config.sub_app_secret = "88888231e2f3a21152d163f61b99999"
 end
