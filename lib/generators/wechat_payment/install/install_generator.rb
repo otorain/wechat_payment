@@ -3,6 +3,7 @@ class WechatPayment::InstallGenerator < Rails::Generators::Base
 
   argument :goods, type: :string
   argument :user, type: :string, default: :User
+  argument :relation_model, type: :string
 
 
   # 生成 initializer 文件
@@ -59,7 +60,11 @@ class WechatPayment::InstallGenerator < Rails::Generators::Base
   end
 
   def user_goods_model_file
-    "app/models/#{user.to_s.underscore}_#{goods.to_s.underscore}.rb"
+    if relation_model
+      "app/models/#{relation_model.underscore}.rb"
+    else
+      "app/models/#{user.to_s.underscore}_#{goods.to_s.underscore}.rb"
+    end
   end
 
   def goods_model_name
@@ -71,7 +76,7 @@ class WechatPayment::InstallGenerator < Rails::Generators::Base
   end
 
   def user_goods_model_name
-    user_model_name + goods_model_name
+    (relation_model&.camelize) || (user_model_name + goods_model_name)
   end
 
   def def_custom_user_model
