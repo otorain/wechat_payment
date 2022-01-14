@@ -2,8 +2,8 @@ class WechatPayment::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   argument :goods, type: :string
-  argument :user, type: :string, default: :User
   argument :relation_model, type: :string
+  argument :user, type: :string, default: :User
 
 
   # 生成 initializer 文件
