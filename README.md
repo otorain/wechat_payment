@@ -17,8 +17,8 @@
 
 3. 初始化
    ```bash
-   # rails g wechat_payment:install [GoodsModel] [UserModel]
-   $ rails g wechat_payment:install Product User
+   # rails g wechat_payment:install [GoodsModel] [UserGoodRelationModel] [UserModel]
+   $ rails g wechat_payment:install Product UserProduct User
    $ rails db:migrate
    ```
 
