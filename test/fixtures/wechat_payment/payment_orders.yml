@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  open_id: MyString
+  openid: MyString
   out_trade_no: MyString
   goods: one
   goods_type: Goods
@@ -15,7 +15,7 @@ one:
   paid_at: 2021-07-06 15:52:17
 
 two:
-  open_id: MyString
+  openid: MyString
   out_trade_no: MyString
   goods: two
   goods_type: Goods

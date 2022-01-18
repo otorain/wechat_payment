@@ -1,7 +1,7 @@
 class CreateWechatPaymentPaymentOrders < ActiveRecord::Migration[6.1]
   def change
     create_table :wechat_payment_payment_orders do |t|
-      t.string :open_id
+      t.string :openid
       t.string :out_trade_no
       t.references :goods, polymorphic: true, null: false
       t.references :customer, polymorphic: true, null: false
@@ -17,6 +17,6 @@ class CreateWechatPaymentPaymentOrders < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
-    add_index :wechat_payment_payment_orders, :open_id
+    add_index :wechat_payment_payment_orders, :openid
   end
 end

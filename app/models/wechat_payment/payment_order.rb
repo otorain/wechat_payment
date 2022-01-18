@@ -21,7 +21,7 @@ module WechatPayment
 
     # 将部分用户信息保存至订单
     def set_customer_info
-      self.open_id = customer.open_id if open_id.blank?
+      self.openid = customer.openid if openid.blank?
       self.spbill_create_ip = customer.spbill_create_ip
     end
 
@@ -54,7 +54,7 @@ module WechatPayment
         spbill_create_ip: spbill_create_ip,
         total_fee: total_fee,
         body: body,
-        openid: open_id
+        openid: openid
       }
     end
 

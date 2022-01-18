@@ -3,7 +3,7 @@
 
 
 ## Convention
-在使用该 Engine 之前，需要先建立`用户模型`，`商品模型`，`用户商品关联模型`，用户表需要有 open_id 字段,
+在使用该 Engine 之前，需要先建立`用户模型`，`商品模型`，`用户商品关联模型`，用户表需要有 openid 字段,
 商品表需要有 price 和 name 字段。假设`商品模型`为`Product`，则用户和商品之间的关联模型为`UserProduct`，
 关联模型属于`user`和`product`。
 
