@@ -8,6 +8,10 @@ module WechatPayment
     before_create :gen_out_trade_no
     belongs_to :goods, polymorphic: true
 
+    scope :by_state, ->(state)do
+      where(state: state) if state.present?
+    end
+
     enum state: {
       paid: "paid",
       pending: "pending",
