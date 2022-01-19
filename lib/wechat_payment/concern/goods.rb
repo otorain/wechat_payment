@@ -25,8 +25,7 @@ module WechatPayment
       # 售出
       # @param [User] user
       # @return [WechatPaymentOrder]
-      def sell_to(user)
-
+      def sell_to(user, with_info = {})
         persist_goods_data = {}.tap do |h|
           self.class.persist_goods_attrs.each do |attr|
             h[attr] = send(attr)
@@ -36,7 +35,8 @@ module WechatPayment
         user_goods = self.class.user_goods_model.constantize.create(
           self.class.goods_ref_field => self,
           self.class.user_ref_field => user,
-          **persist_goods_data
+          **with_info,
+          **persist_goods_data,
         )
 
         user_goods.payment_orders.create(

@@ -14,8 +14,8 @@ module WechatPayment
         end
       end
 
-      def buy(goods)
-        goods.sell_to(me)
+      def buy(goods, with_info = {})
+        goods.sell_to(me, with_info)
       end
     end
   end
