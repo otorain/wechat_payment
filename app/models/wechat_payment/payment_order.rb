@@ -73,9 +73,16 @@ module WechatPayment
     #   "orderId": 17
     # }
     def pay
+      if payment_params.present?
+        return ServiceResult.new(success: true, data: payment_params, message: "获取支付参数成功")
+      end
+
       order_result = WechatPayment::Service.new(self).order
       if order_result.success?
         payload = WechatPayment::Client.gen_js_pay_payload(order_result.data).merge(orderId: id).with_indifferent_access
+
+        update(payment_params: payload)
+
         WechatPayment::ServiceResult.new(success: true, data: payload)
       else
         order_result
@@ -203,7 +210,8 @@ module WechatPayment
       update(
         state: :paid,
         transaction_id: result["transaction_id"],
-        paid_at: Time.current
+        paid_at: Time.current,
+        payment_params: nil
       )
 
       if goods.respond_to? :payment_exec_success

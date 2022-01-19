@@ -14,6 +14,7 @@ class CreateWechatPaymentPaymentOrders < ActiveRecord::Migration[6.1]
       t.string :state
       t.datetime :paid_at
       t.datetime :refunded_at
+      t.jsonb :payment_params
 
       t.timestamps
     end
