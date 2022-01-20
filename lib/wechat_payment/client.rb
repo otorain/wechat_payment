@@ -39,11 +39,10 @@ module WechatPayment
       if order_result.success?
 
         payment_logger.info("{params: #{order_params}, result: #{order_result}}")
-        # WechatPayment::ServiceResult.new(success: true, data: { order_result: order_result.with_indifferent_access, js_payload: mini_program_request_params.with_indifferent_access })
         WechatPayment::ServiceResult.new(success: true, data: order_result.with_indifferent_access)
       else
         payment_logger.error("{params: #{order_params}, result: #{order_result}}")
-        WechatPayment::ServiceResult.new(success: false, errors: order_result.with_indifferent_access)
+        WechatPayment::ServiceResult.new(success: false, error: order_result.with_indifferent_access)
       end
     end
 
@@ -79,17 +78,17 @@ module WechatPayment
     def self.handle_payment_notify(notify_data)
       if !WechatPayment::Sign.verify?(notify_data)
         payment_logger.error("{msg: 签名验证失败, errors: #{notify_data}}")
-        WechatPayment::ServiceResult.new(errors: notify_data, message: "回调签名验证失败")
+        WechatPayment::ServiceResult.new(success: false, error: notify_data, message: "回调签名验证失败")
       end
 
       result = WechatPayment::InvokeResult.new(notify_data)
 
       if result.success?
         payment_logger.info("{callback: #{notify_data}}")
-        WechatPayment::ServiceResult.new(success: true, data: notify_data)
+        WechatPayment::ServiceResult.new(success: true, data: notify_data, message: "支付执行成功", )
       else
         payment_logger.error("{callback: #{notify_data}}")
-        WechatPayment::ServiceResult.new(errors: notify_data)
+        WechatPayment::ServiceResult.new(success: false, error: notify_data, message: "支付执行失败", error_type: :payment_exec_failed)
       end
     end
 
@@ -99,11 +98,11 @@ module WechatPayment
 
       result = WechatPayment::InvokeResult.new(notify_data)
       if result.success?
-        refund_logger.info "{callback: #{notify_data}}"
+        refund_logger.info "退款执行成功{callback: #{notify_data}}"
         WechatPayment::ServiceResult.new(success: true, data: notify_data)
       else
-        refund_logger.error "{callback: #{notify_data}}"
-        WechatPayment::ServiceResult.new(errors: notify_data)
+        refund_logger.error "退款执行失败: {callback: #{notify_data}}"
+        WechatPayment::ServiceResult.new(success:false, error: notify_data, message: "退款回调失败")
       end
     end
 

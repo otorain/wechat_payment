@@ -1,19 +1,28 @@
 module WechatPayment
   class ServiceResult
     attr_accessor :success,
-                  :errors,
+                  :error,
                   :data,
                   :message,
-                  :message_type
+                  :message_type,
+                  :error_type
 
     def initialize(success: false,
-                   errors: nil,
+                   error: nil,
                    message: nil,
                    message_type: nil,
-                   data: nil)
+                   data: nil,
+                   error_type)
       self.success = success
-      self.data = data
-      self.errors = errors.is_a?(Enumerable) ? errors : [errors]
+
+      self.data = data.presence || {}
+
+      if self.data.is_a? Hash
+        self.data = self.data.with_indifferent_access
+      end
+
+      self.error = error
+
       self.message = message
       self.message_type = message_type
     end
@@ -36,14 +45,22 @@ module WechatPayment
       if message_type.present?
         message_type.to_sym
       elsif success?
-        :notice
+        :info
       else
         :error
       end
     end
 
     def as_json(options = {})
-      data.as_json(options)
+      # data.as_json(options)
+      {
+        success: success,
+        data: data,
+        message: message,
+        message_type: get_message_type,
+        error: error,
+        error_type: error_type
+      }
     end
   end
 end

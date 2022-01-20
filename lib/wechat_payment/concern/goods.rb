@@ -32,19 +32,33 @@ module WechatPayment
           end
         end
 
-        user_goods = self.class.user_goods_model.constantize.create(
+        user_goods_model = self.class.user_goods_model.constantize
+
+        user_goods = user_goods_model.new(
           self.class.goods_ref_field => self,
           self.class.user_ref_field => user,
           **with_info,
           **persist_goods_data,
         )
 
-        user_goods.payment_orders.create(
+        unless user_goods.save
+          return WechatPayment::ServiceResult.new(success: false,
+                                                  error: user_goods.errors,
+                                                  message: "商品中间表 #{user_goods_model.table_name} 插入数据失败",
+                                                  error_type: :create_user_goods_failed)
+        end
+
+        payment_order = user_goods.payment_orders.new(
           body: name,
           total_fee: price,
           trade_type: :JSAPI,
           customer: user
         )
+
+        unless payment_order.save
+          return WechatPayment::ServiceResult.new(success: false, error: user_goods.errors, message: "支付订单创建失败")
+        end
+
       end
 
       # 重新支付，应用场景是： 用户取消了支付后，使用最后一张订单进行支付
