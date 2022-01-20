@@ -12,7 +12,7 @@ module WechatPayment
                    message: nil,
                    message_type: nil,
                    data: nil,
-                   error_type)
+                   error_type: nil)
       self.success = success
 
       self.data = data.presence || {}

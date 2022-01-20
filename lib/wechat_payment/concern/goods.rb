@@ -59,6 +59,7 @@ module WechatPayment
           return WechatPayment::ServiceResult.new(success: false, error: user_goods.errors, message: "支付订单创建失败")
         end
 
+        WechatPayment::ServiceResult.new(success: true, data: payment_order, message: "支付订单创建成功")
       end
 
       # 重新支付，应用场景是： 用户取消了支付后，使用最后一张订单进行支付
