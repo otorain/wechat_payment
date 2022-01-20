@@ -65,7 +65,7 @@ module WechatPayment
         WechatPayment::ServiceResult.new(success: true, data: refund_result)
       else
         refund_logger.error "{params: #{refund_params}, result: #{refund_result}"
-        WechatPayment::ServiceResult.new(success: false, errors: refund_result)
+        WechatPayment::ServiceResult.new(success: false, error: refund_result)
       end
     end
 
