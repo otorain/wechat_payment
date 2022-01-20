@@ -49,20 +49,20 @@ module WechatPayment
 
       # 重新支付，应用场景是： 用户取消了支付后，使用最后一张订单进行支付
       # @return [WechatPayment::ServiceResult]
-      def repay
-        # 如果不是待支付状态
-        unless pending?
-          WechatPayment::ServiceResult.new(message: "当前状态不可支付")
-        end
+      # def repay
+      #   # 如果不是待支付状态
+      #   unless pending?
+      #     WechatPayment::ServiceResult.new(message: "当前状态不可支付")
+      #   end
 
-        result = payment_orders.last.repay
+        # result = payment_orders.last.repay
 
-        if result.success?
-          WechatPayment::ServiceResult.new(success: true, data: result.data[:js_payload])
-        else
-          WechatPayment::ServiceResult.new(message: result.errors.first[:err_code_des])
-        end
-      end
+      #   if result.success?
+      #     WechatPayment::ServiceResult.new(success: true, data: result.data[:js_payload])
+      #   else
+      #     WechatPayment::ServiceResult.new(message: result.errors.first[:err_code_des])
+      #   end
+      # end
 
 
       # 退款

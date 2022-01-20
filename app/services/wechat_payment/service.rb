@@ -44,7 +44,7 @@ module WechatPayment
       result = WechatPayment::Client.handle_payment_notify(notify_data)
       payment_order = WechatPayment::PaymentOrder.find_by(out_trade_no: notify_data["out_trade_no"])
 
-      if result.success? && payment_order.pending?
+      if result.success? && payment_order.pending_pay?
         payment_order.with_lock do
           payment_order.payment_exec_success(result.data)
         end
@@ -60,7 +60,7 @@ module WechatPayment
       result = WechatPayment::Client.handle_refund_notify(notify_data)
       refund_order = WechatPayment::RefundOrder.find_by(out_refund_no: result.data["out_refund_no"])
 
-      if result.success? && refund_order.pending?
+      if result.success? && refund_order.pending_pay?
         refund_order.with_lock do
           refund_order.refund_exec_success(result.data)
         end

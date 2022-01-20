@@ -8,10 +8,10 @@ module WechatPayment
     belongs_to :customer, polymorphic: true
 
     enum state: {
-      pending: "pending",
+      pending_refund: "pending_refund",
       refunded: "refunded",
       failed: "failed"
-    }, _default: :pending
+    }, _default: "pending_refund"
 
     # 生成退款编号
     def gen_out_refund_no
@@ -62,7 +62,7 @@ module WechatPayment
 
       update(
         refund_id: result["refund_id"],
-        state: :pending
+        state: :pending_refund
       )
 
       result

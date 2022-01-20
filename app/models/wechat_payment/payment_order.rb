@@ -14,10 +14,10 @@ module WechatPayment
 
     enum state: {
       paid: "paid",
-      pending: "pending",
+      pending_pay: "pending_pay",
       refunded: "refunded",
       failed: "failed"
-    }, _default: "pending"
+    }, _default: "pending_pay"
 
     # 将部分用户信息保存至订单
     def set_customer_info
@@ -72,8 +72,8 @@ module WechatPayment
     #   "paySign": "1F5CBC345B86E5DD055F235A22961422",
     #   "orderId": 17
     # }
-    def pay
-      if payment_params.present?
+    def pay(repay: false)
+      if payment_params.present? && !repay
         return ServiceResult.new(success: true, data: payment_params, message: "获取支付参数成功")
       end
 
@@ -93,7 +93,7 @@ module WechatPayment
     def repay
       gen_out_trade_no
       save
-      pay
+      pay(repay: true)
     end
 
     # 发起退款
@@ -109,7 +109,7 @@ module WechatPayment
 
     # 已退款的金额(包括正在退款的金额)
     def refunded_fee
-      refund_orders.where(state: [:pending, :refunded]).sum(:refund_fee)
+      refund_orders.where(state: [:pending_refund, :refunded]).sum(:refund_fee)
     end
 
     # 实际已退的金额

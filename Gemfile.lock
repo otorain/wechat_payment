@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    wechat_payment (2.0.2)
+    wechat_payment (2.0.6)
       rails (~> 7.0.1)
       rexml
       wx_pay
@@ -123,8 +123,6 @@ GEM
       mini_portile2 (~> 2.7.0)
       racc (~> 1.4)
     nokogiri (1.13.1-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
     racc (1.6.0)
     rack (2.2.3)
