@@ -77,7 +77,7 @@ module WechatPayment
     # 处理支付回调
     def self.handle_payment_notify(notify_data)
       if !WechatPayment::Sign.verify?(notify_data)
-        payment_logger.error("{msg: 签名验证失败, errors: #{notify_data}}")
+        payment_logger.error("{msg: 签名验证失败, error: #{notify_data}}")
         WechatPayment::ServiceResult.new(success: false, error: notify_data, message: "回调签名验证失败")
       end
 

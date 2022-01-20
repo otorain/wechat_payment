@@ -10,7 +10,7 @@ module WechatPayment
       if process_result.success?
         render xml: { return_code: "SUCCESS" }.to_xml(root: 'xml', dasherize: false)
       else
-        render xml: { return_code: "FAIL", return_msg: process_result.errors.first }.to_xml(root: 'xml', dasherize: false)
+        render xml: { return_code: "FAIL", return_msg: process_result.error.first }.to_xml(root: 'xml', dasherize: false)
       end
     end
 
@@ -21,7 +21,7 @@ module WechatPayment
       if refund_result.success?
         render xml: {return_code: "SUCCESS"}.to_xml(root: 'xml', dasherize: false)
       else
-        render xml: {return_code: "FAIL", return_msg: refund_result.errors.first}.to_xml(root: 'xml', dasherize: false)
+        render xml: {return_code: "FAIL", return_msg: refund_result.error.first}.to_xml(root: 'xml', dasherize: false)
       end
 
     end

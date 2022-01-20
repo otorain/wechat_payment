@@ -15,7 +15,7 @@ module WechatPayment
       if order_result.success?
         payment_order.payment_apply_success(order_result.data)
       else
-        payment_order.payment_apply_failure(order_result.errors)
+        payment_order.payment_apply_failure(order_result.error)
       end
 
       order_result
@@ -33,7 +33,7 @@ module WechatPayment
       if refund_result.success?
         refund_order.refund_apply_success(refund_result.data)
       else
-        refund_order.refund_apply_failure(refund_result.errors)
+        refund_order.refund_apply_failure(refund_result.error)
       end
 
       refund_result
@@ -49,7 +49,7 @@ module WechatPayment
           payment_order.payment_exec_success(result.data)
         end
       else
-        payment_order.payment_exec_failure(result.errors)
+        payment_order.payment_exec_failure(result.error)
       end
 
       result
@@ -65,7 +65,7 @@ module WechatPayment
           refund_order.refund_exec_success(result.data)
         end
       else
-        refund_order.refund_exec_failure(result.errors)
+        refund_order.refund_exec_failure(result.error)
       end
 
       result
