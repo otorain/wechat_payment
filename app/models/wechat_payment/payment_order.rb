@@ -28,7 +28,7 @@ module WechatPayment
     # 生成交易编号
     def gen_out_trade_no
       loop do
-        out_trade_no = "#{Time.current.to_i}#{SecureRandom.random_number(999_999_999)}"
+        out_trade_no = "#{WechatPayment.order_no_prefix}#{Time.current.to_i}#{SecureRandom.random_number(999_999_999)}"
         records_count = WechatPayment::PaymentOrder.where(out_trade_no: out_trade_no).count
         if records_count == 0
           self.out_trade_no = out_trade_no

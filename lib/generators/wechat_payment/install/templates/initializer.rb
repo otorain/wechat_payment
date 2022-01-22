@@ -16,4 +16,7 @@ WechatPayment.setup do |config|
   config.sub_appid = "wx8f9f912623456789"
   config.sub_mch_id = "1234911291"
   config.sub_app_secret = "88888231e2f3a21152d163f61b99999"
+
+  # 生成的订单编号前缀
+  # config.order_no_prefix = "wx_"
 end

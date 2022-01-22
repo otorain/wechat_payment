@@ -5,7 +5,7 @@ module WechatPayment
 
   class << self
     attr_reader :apiclient_cert, :apiclient_key
-    attr_accessor :appid, :app_secret, :mch_id, :sub_appid, :sub_app_secret, :sub_mch_id, :key, :cert_path, :host
+    attr_accessor :appid, :app_secret, :mch_id, :sub_appid, :sub_app_secret, :sub_mch_id, :key, :cert_path, :host, :order_no_prefix
   end
 
   def self.setup
