@@ -1,5 +1,5 @@
 
-class PaymentOrdersController < ApplicationController
+class WechatPayment::PaymentOrdersController < ApplicationController
   def index
     @payment_orders = WechatPayment::PaymentOrder.by_state(params[:state])
 
