@@ -21,11 +21,13 @@ module WechatPayment
 
       if order_result.success?
         message = "发起支付成功"
-        WechatPayment::PaymentLogger.info { "{ msg: '#{message}', params: #{order_params}, result: #{order_result} }" }
+        log_content = { message:, params: order_params, result: order_result }.to_json
+        WechatPayment::PaymentLogger.info { log_content }
         WechatPayment::SuccessResult.new(data: order_result, message:, message_kind: :payment_apply_success)
       else
         message = "发起支付失败"
-        WechatPayment::PaymentLogger.error { "{ msg: '#{message}', params: #{order_params}, result: #{order_result} }" }
+        log_content = { message: , params: order_params, result: order_result }.to_json
+        WechatPayment::PaymentLogger.error { log_content }
         WechatPayment::FailureResult.new(error: order_result, message:, message_kind: :payment_apply_failed)
       end
     end
@@ -46,11 +48,13 @@ module WechatPayment
 
       if refund_result.success?
         message = '发起退款成功'
-        WechatPayment::RefundLogger.info { "{ msg: '#{message}', params: #{refund_params}, result: #{refund_result}" }
+        log_content = { message:, params: refund_params, result: refund_result}.to_json
+        WechatPayment::RefundLogger.info { log_content }
         WechatPayment::SuccessResult.new(data: refund_result, message:, message_kind: :refund_apply_success)
       else
         message = "发起退款失败"
-        WechatPayment::RefundLogger.error { "{ msg: '#{message}', params: #{refund_params}, result: #{refund_result}" }
+        log_content = { message:, params: refund_params, result: refund_result }.to_json
+        WechatPayment::RefundLogger.error { log_content }
         WechatPayment::FailureResult.new(error: refund_result, message:, message_kind: :refund_apply_failed)
       end
     end
@@ -64,18 +68,20 @@ module WechatPayment
     def self.handle_payment_notify(notify_data)
       if !WechatPayment::Sign.verify?(notify_data)
         message = "回调签名验证失败"
-        WechatPayment::PaymentLogger.error { "{ msg: '#{message}', error: #{notify_data} }" }
+        WechatPayment::PaymentLogger.error { { message: , error: notify_data }.to_json }
         WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :validate_sign_failed)
       end
 
       result = WechatPayment::InvokeResult.new(notify_data)
       if result.success?
         message = "支付执行成功"
-        WechatPayment::PaymentLogger.info { "{ msg: '#{message}', callback: #{notify_data} }" }
+        log_content = { message:, callback: notify_data }.to_json
+        WechatPayment::PaymentLogger.info { log_content }
         WechatPayment::SuccessResult.new(data: notify_data, message:, message_kind: :payment_exec_success)
       else
         message = "支付执行失败"
-        WechatPayment::PaymentLogger.error{ "{ msg: '#{message}', callback: #{notify_data} }" }
+        log_content = { message:, callback: notify_data }.to_json
+        WechatPayment::PaymentLogger.error { log_content }
         WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :payment_exec_failed)
       end
     end
@@ -87,11 +93,13 @@ module WechatPayment
       result = WechatPayment::InvokeResult.new(notify_data)
       if result.success?
         message = "退款执行成功"
-        WechatPayment::RefundLogger.info { "{ msg: '#{message}', callback: #{notify_data} }" }
+        log_content = { message:, callback: notify_data }.to_json
+        WechatPayment::RefundLogger.info { log_content }
         WechatPayment::SuccessResult.new(data: notify_data, message:, message_kind: :refund_exec_success)
       else
         message = "退款执行失败"
-        WechatPayment::RefundLogger.error { "{ msg: '#{message}', callback: #{notify_data} }" }
+        log_content = { message:, callback: notify_data}.to_json
+        WechatPayment::RefundLogger.error { log_content }
         WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :refund_exec_failed)
       end
     end
