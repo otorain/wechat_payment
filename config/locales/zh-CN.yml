@@ -1,0 +1,15 @@
+
+"zh-CN":
+  wechat_payment_service_result:
+    message:
+      invoke_unifiedorder_success: 统一支付预支付成功
+      invoke_unifiedorder_failed: 统一支付预支付失败
+      payment_apply_success: 支付发起成功
+      payment_apply_failed: 支付发起失败
+      payment_exec_success: 支付执行成功
+      payment_exec_failed: 支付执行失败
+      refund_apply_success: 退款发起成功
+      refund_apply_failed: 退款发起失败
+      refund_exec_success: 退款执行成功
+      refund_exec_failed: 退款执行失败
+      validate_sign_failed: 支付回调签名验证失败

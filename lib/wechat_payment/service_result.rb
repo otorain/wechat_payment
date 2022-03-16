@@ -4,27 +4,22 @@ module WechatPayment
                   :error,
                   :data,
                   :message,
-                  :message_type,
-                  :error_type
+                  :message_kind,
+                  :message_type
 
     def initialize(success: false,
+                   data: {},
                    error: nil,
                    message: nil,
-                   message_type: nil,
-                   data: nil,
-                   error_type: nil)
+                   message_kind: nil,
+                   message_type: nil)
+
       self.success = success
-
-      self.data = data.presence || {}
-
-      if self.data.is_a? Hash
-        self.data = self.data.with_indifferent_access
-      end
-
+      self.data = data
       self.error = error
-
       self.message = message
       self.message_type = message_type
+      self.message_kind = message_kind
     end
 
     alias success? :success
@@ -41,9 +36,9 @@ module WechatPayment
       yield(self) if failure?
     end
 
-    def get_message_type
-      if message_type.present?
-        message_type.to_sym
+    def message_type
+      if @message_type.present?
+        @message_type.to_sym
       elsif success?
         :info
       else
@@ -51,15 +46,22 @@ module WechatPayment
       end
     end
 
+    def message_kind_prefix
+      "wechat_payment_"
+    end
+
+    def message_kind
+      "#{message_kind_prefix}#{@message_kind}"
+    end
+
     def as_json(options = {})
-      # data.as_json(options)
       {
         success: success,
         data: data,
         message: message,
-        message_type: get_message_type,
         error: error,
-        error_type: error_type
+        message_kind: message_kind,
+        message_type: message_type
       }
     end
   end

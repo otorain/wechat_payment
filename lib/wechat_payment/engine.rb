@@ -3,5 +3,6 @@ module WechatPayment
     isolate_namespace WechatPayment
 
     config.autoload_paths << "#{config.root}/lib"
+    config.i18n.default_locale = "zh-CN"
   end
 end

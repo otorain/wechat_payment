@@ -3,23 +3,6 @@ module WechatPayment
   class Client
     GATEWAY_URL = 'https://api.mch.weixin.qq.com'.freeze
 
-    def initialize # (merchant = WechatPayment)
-      # required_attrs = [:appid, :mch_id, :key, :app_secret, :cert_path]
-      # missing_attrs = required_attrs.reject { |attr| merchant.respond_to?(attr) }
-      # if missing_attrs.present?
-      #   raise Exceptions::MerchantMissingAttr.new("Missing attributes: #{missing_attrs}, merchant target must respond to: appid, mch_id, key, appsecret, cert_path")
-      # end
-      #
-      # @merchant = merchant
-      # cert_path = Rails.root.join(merchant.cert_path)
-      #
-      # WechatPayment.appid = merchant.appid
-      # WechatPayment.key = merchant.key
-      # WechatPayment.mch_id = merchant.mch_id
-      # WechatPayment.appsecret = merchant.app_secret
-      # WechatPayment.set_apiclient_by_pkcs12(File.binread(cert_path), merchant.mch_id)
-    end
-
     ORDER_REQUIRED_FIELD = [:out_trade_no, :spbill_create_ip, :body, :total_fee, :openid]
     # 下单
     def order(order_params)
@@ -37,12 +20,13 @@ module WechatPayment
       order_result = invoke_unifiedorder(order_params)
 
       if order_result.success?
-
-        payment_logger.info("{params: #{order_params}, result: #{order_result}}")
-        WechatPayment::ServiceResult.new(success: true, data: order_result.with_indifferent_access)
+        message = "发起支付成功"
+        WechatPayment::PaymentLogger.info { "{ msg: '#{message}', params: #{order_params}, result: #{order_result} }" }
+        WechatPayment::SuccessResult.new(data: order_result, message:, message_kind: :payment_apply_success)
       else
-        payment_logger.error("{params: #{order_params}, result: #{order_result}}")
-        WechatPayment::ServiceResult.new(success: false, error: order_result.with_indifferent_access)
+        message = "发起支付失败"
+        WechatPayment::PaymentLogger.error { "{ msg: '#{message}', params: #{order_params}, result: #{order_result} }" }
+        WechatPayment::FailureResult.new(error: order_result, message:, message_kind: :payment_apply_failed)
       end
     end
 
@@ -61,11 +45,13 @@ module WechatPayment
       refund_result = invoke_refund(refund_params.to_options)
 
       if refund_result.success?
-        refund_logger.info "{params: #{refund_params}, result: #{refund_result}"
-        WechatPayment::ServiceResult.new(success: true, data: refund_result)
+        message = '发起退款成功'
+        WechatPayment::RefundLogger.info { "{ msg: '#{message}', params: #{refund_params}, result: #{refund_result}" }
+        WechatPayment::SuccessResult.new(data: refund_result, message:, message_kind: :refund_apply_success)
       else
-        refund_logger.error "{params: #{refund_params}, result: #{refund_result}"
-        WechatPayment::ServiceResult.new(success: false, error: refund_result)
+        message = "发起退款失败"
+        WechatPayment::RefundLogger.error { "{ msg: '#{message}', params: #{refund_params}, result: #{refund_result}" }
+        WechatPayment::FailureResult.new(error: refund_result, message:, message_kind: :refund_apply_failed)
       end
     end
 
@@ -77,18 +63,20 @@ module WechatPayment
     # 处理支付回调
     def self.handle_payment_notify(notify_data)
       if !WechatPayment::Sign.verify?(notify_data)
-        payment_logger.error("{msg: 签名验证失败, error: #{notify_data}}")
-        WechatPayment::ServiceResult.new(success: false, error: notify_data, message: "回调签名验证失败")
+        message = "回调签名验证失败"
+        WechatPayment::PaymentLogger.error { "{ msg: '#{message}', error: #{notify_data} }" }
+        WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :validate_sign_failed)
       end
 
       result = WechatPayment::InvokeResult.new(notify_data)
-
       if result.success?
-        payment_logger.info("{callback: #{notify_data}}")
-        WechatPayment::ServiceResult.new(success: true, data: notify_data, message: "支付执行成功", )
+        message = "支付执行成功"
+        WechatPayment::PaymentLogger.info { "{ msg: '#{message}', callback: #{notify_data} }" }
+        WechatPayment::SuccessResult.new(data: notify_data, message:, message_kind: :payment_exec_success)
       else
-        payment_logger.error("{callback: #{notify_data}}")
-        WechatPayment::ServiceResult.new(success: false, error: notify_data, message: "支付执行失败", error_type: :payment_exec_failed)
+        message = "支付执行失败"
+        WechatPayment::PaymentLogger.error{ "{ msg: '#{message}', callback: #{notify_data} }" }
+        WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :payment_exec_failed)
       end
     end
 
@@ -98,11 +86,13 @@ module WechatPayment
 
       result = WechatPayment::InvokeResult.new(notify_data)
       if result.success?
-        refund_logger.info "退款执行成功{callback: #{notify_data}}"
-        WechatPayment::ServiceResult.new(success: true, data: notify_data)
+        message = "退款执行成功"
+        WechatPayment::RefundLogger.info { "{ msg: '#{message}', callback: #{notify_data} }" }
+        WechatPayment::SuccessResult.new(data: notify_data, message:, message_kind: :refund_exec_success)
       else
-        refund_logger.error "退款执行失败: {callback: #{notify_data}}"
-        WechatPayment::ServiceResult.new(success:false, error: notify_data, message: "退款回调失败")
+        message = "退款执行失败"
+        WechatPayment::RefundLogger.error { "{ msg: '#{message}', callback: #{notify_data} }" }
+        WechatPayment::FailureResult.new(error: notify_data, message:, message_kind: :refund_exec_failed)
       end
     end
 
@@ -138,7 +128,6 @@ module WechatPayment
       params[:paySign] = WechatPayment::Sign.generate(params)
       params
     end
-
 
     INVOKE_UNIFIEDORDER_REQUIRED_FIELDS = [:body, :out_trade_no, :total_fee, :spbill_create_ip, :notify_url, :trade_type]
     def invoke_unifiedorder(params, options = {})
@@ -176,7 +165,10 @@ module WechatPayment
       params[:op_user_id] ||= params[:mch_id]
 
       check_required_options(params, INVOKE_REFUND_REQUIRED_FIELDS)
-      warn("WechatPayment Warn: missing required option: out_trade_no or transaction_id must have one") if ([:out_trade_no, :transaction_id] & params.keys) == []
+
+      if ([:out_trade_no, :transaction_id] & params.keys) == []
+        warn("WechatPayment Warn: missing required option: out_trade_no or transaction_id must have one")
+      end
 
       options = {
         cert: options.delete(:apiclient_cert) || WechatPayment.apiclient_cert,
@@ -191,7 +183,6 @@ module WechatPayment
       )
 
       yield result if block_given?
-
       result
     end
 
@@ -237,7 +228,6 @@ module WechatPayment
       res.body
     end
 
-
     private
 
     # 判断 hash 是否缺少 key
@@ -248,24 +238,5 @@ module WechatPayment
         raise WechatPayment::MissingKeyError.new("Parameter missing keys: #{lack_of_keys}")
       end
     end
-
-    # 支付日志
-    def payment_logger
-      WechatPayment::Client.payment_logger
-    end
-
-    # 退款日志
-    def refund_logger
-      WechatPayment::Client.refund_logger
-    end
-
-    def self.payment_logger
-      @payment_logger ||= WechatPayment::RLogger.make("wx_payment")
-    end
-
-    def self.refund_logger
-      @refund_logger ||= WechatPayment::RLogger.make("wx_refund")
-    end
-
   end
 end
