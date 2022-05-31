@@ -48,7 +48,7 @@ module WechatPayment
           }.to_json
 
           WechatPayment::Logger.info { log_content }
-          return WechatPayment::FailureResult.new(error: user_goods.error,
+          return WechatPayment::FailureResult.new(error: user_goods.errors.full_messages,
                                                   message: "商品中间表 #{user_goods_model.table_name} 插入数据失败",
                                                   message_kind: :create_user_goods_failed)
         end
@@ -67,7 +67,7 @@ module WechatPayment
           message = "支付订单创建失败"
           log_content = { message:, error: payment_order.errors.full_messages }.to_json
           WechatPayment::Logger.error { log_content }
-          WechatPayment::FailureResult.new(error: user_goods.error, message:, message_kind: :create_payment_order_failed)
+          WechatPayment::FailureResult.new(error: user_goods.errors.full_messages, message:, message_kind: :create_payment_order_failed)
         end
       end
 
