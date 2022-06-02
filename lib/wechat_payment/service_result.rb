@@ -15,7 +15,12 @@ module WechatPayment
                    message_type: nil)
 
       self.success = success
-      self.data = (data || {}).with_indifferent_access
+      case data
+      when Hash
+        self.data = data.with_indifferent_access
+      else
+        self.data = data
+      end
       self.error = error
       self.message = message
       self.message_type = message_type
